@@ -1,0 +1,122 @@
+﻿@model DTO_QLAC.Account
+
+@{
+    ViewBag.Title = "Tạo tài khoản";
+}
+
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+                <a href="/Home/Mainpage" class="navbar-brand">Home</a>
+        </div>
+    </div>
+</div>
+<h2>Tạo tài khoản mới</h2>
+
+
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="Name">Tên</label>
+        <div class="col-md-10">
+            <input class="form-control text-box single-line" data-val="true" data-val-required="The Name field is required." id="Name" name="Name" type="text" value="">
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="DateOfBirth">Ngày sinh</label>
+        <div class="col-md-10">
+            <input class="form-control" name="DateOfBirth" id="DateOfBirth" type="date" value="" />
+            @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="OfficeID">Văn phòng</label>
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.OfficeID, (IEnumerable<SelectListItem>)ViewBag.OfficeList, "---Select Office---", new { @class = "form-control", id="Office" })
+            @Html.ValidationMessageFor(model => model.OfficeID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="Username">Tên đăng nhập</label>
+        <div class="col-md-10">
+            <input class="form-control text-box single-line" id="Username" name="Username" type="text" value="">
+            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="Password">Mật khẩu</label>
+        <div class="col-md-10">
+            <input class="form-control text-box single-line" id="Password" name="Password" type="password" value="">
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="RoleID">Quyền hạn</label>
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.RoleID, (IEnumerable<SelectListItem>)ViewBag.RoleList, "---Select Role---", new { @class = "form-control", id="role" })            
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" onclick="Save()" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+
+
+<div>
+    @Html.ActionLink("Trở về", "Index")
+</div>
+
+
+<script>
+  
+    function Save() {
+            debugger;
+            name = $("#Name").val();
+            dob = $("#DateOfBirth").val();
+            office = $("#Office").val();
+            usrname = $("#Username").val();
+            password = $("#Password").val();
+            role = $("#role").val();
+            var account = {
+                Name: name,
+                DateOfBirth: dob,
+                OfficeID: office,
+                Username: usrname,
+                Password: password,
+                RoleID: role
+            };
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(account),
+            url: '/Account/CreateAccount',
+            dataType: 'json',
+            success: function (data) {
+                location.reload();
+                alert('Tạo tài khoản thành công');
+            },
+            failure: function (response) {
+                alert('Tạo tài khoản thất bại');
+            },
+            error: function (response) {
+                alert('Có lỗi xảy ra');
+            }
+        });
+    }
+</script>

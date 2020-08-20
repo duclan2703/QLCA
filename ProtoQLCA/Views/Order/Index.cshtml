@@ -1,0 +1,219 @@
+﻿@model ProtoQLCA.Models.OrderModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a href="/Home/Mainpage" class="navbar-brand">Home</a>
+        </div>
+        <ul class="nav navbar-nav">
+            @if (HttpContext.Current.User.IsInRole("admin"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link" href="/Account/Index">Quản lý nhân viên</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Office/Index">Văn phòng</a>
+                </li>
+            }
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Xin chào @HttpContext.Current.User.Identity.Name
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/Home/ChangePassword">Đổi mật khẩu</a>
+                    @*<a class="dropdown-item" href="#">Another action</a>*@
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/Home/Logout">Đăng xuất</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<h2>Danh sách ca ăn</h2>
+
+@using (Html.BeginForm())
+{
+    <div class="container">
+
+        <div class="row" id="filter">
+            <form method="POST">
+                <div class="form-group col-md-3 col-xs-6">
+                    <p>Tên:<input class="form-control text-box" type="text" name="Name" placeholder="Search" /></p>
+                </div>
+                <div class="form-group col-md-2 col-xs-6">
+                    <p>Phòng - ban:@Html.DropDownListFor(model => model.OfficeName, (IEnumerable<SelectListItem>)ViewBag.Listname, "---Select Office---", new { @class = "form-control" })</p>
+                </div>
+                <div class="form-group col-md-2 col-xs-6">
+                    <p>Từ ngày:<input class="form-control text-box filter" data-val="true" id="FromDate" name="FromDate" type="date" value="@DateTime.Today" ></p>
+                </div>
+                <div class="form-group col-md-2 col-xs-6">
+                    <p>Đến ngày:<input class="form-control text-box filter" data-val="true" id="ToDate" name="ToDate" type="date" value="@DateTime.Today" ></p>
+                </div>
+                <div class="form-group col-md-3 col-xs-3">
+                    <button type="submit" class="btn btn-block btn-primary" style="width:90%; margin-top:20px">Tìm kiếm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<table class="table paginated">
+    <tbody>
+        <tr>
+
+            <th>Tên</th>
+            <th>Phòng - ban</th>
+            <th>Ngày tạo phiếu</th>
+            <th>Ca</th>
+            <th>Ngày sửa phiếu</th>
+            <th>Người sửa</th>
+
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.Listorder)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.OfficeName)</td>
+                <td>@Convert.ToDateTime(item.OrderDate).ToString("dd/MM/yyyy")</td>
+                <td>@Html.DisplayFor(modelItem => item.ShiftName)</td>
+                <td>@Convert.ToDateTime(item.EditDate).ToString("dd/MM/yyyy")</td>
+                <td>@Html.DisplayFor(modelItem => item.EditBy)</td>
+
+                <td>
+                    <button onclick="location.href='/Order/Edit/@item.OrderID'" class="edit btn btn-default" style="margin-left:0%">Edit</button>
+                    <button class="btn btn-default" onclick="modalConfirm(@item.OrderID)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div id="mi-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h4 class="modal-title" id="myModalLabel">Bạn muốn xoá nhân phiếu ăn này chứ?</h4>
+        <div class="modal-footer" style="text-align:center">
+            <button type="button" class="btn btn-default" id="modal-btn-yes" onclick="delfunction()">Yes</button>
+            <button type="button" class="btn btn-primary" id="modal-btn-no" onclick="closeModal()">No</button>
+        </div>
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Về trang chính", "Mainpage", "Home")
+</div>
+
+@*delete script*@
+<script>
+    var btn = document.getElementById("btn-confirm");
+    var modal = document.getElementById("mi-modal");
+    var span = document.getElementsByClassName("close")[0];
+    var close = document.getElementById("modal-btn-no");
+    var btnDelete = document.getElementById("modal-btn-yes");
+    function modalConfirm(id) {
+        modal.style.display = "block";
+        btnDelete.value = id;
+    }
+    function closeModal() {
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        close.onclick = function () {
+            modal.style.display = "none";
+        }
+    }
+    function delfuntion() {
+        return location.href = '/Order/Delete?id=' + btnDelete.value.toString();
+    }
+</script>
+
+@*page script*@
+<script>
+    $(function () {
+        $('table.paginated').each(function () {
+            var currentPage = 0;
+            var numPerPage = 10;
+            var $table = $(this);
+            $table.bind('repaginate', function () {
+                $table.find('tbody tr').hide().slice(currentPage * numPerPage, (currentPage + 1) * numPerPage).show();
+            });
+            $table.trigger('repaginate');
+            var numRows = $table.find('tbody tr').length;
+            var numPages = Math.ceil(numRows / numPerPage);
+            var $pager = $('<div class="pager"></div>');
+            var $previous = $('<span class="previous btn"><<</spnan>');
+            var $next = $('<span class="next btn">>></spnan>');
+            for (var page = 0; page < numPages; page++) {
+                $('<span class="page-number btn"></span>').text(page + 1).bind('click', {
+                    newPage: page
+                }, function (event) {
+                    currentPage = event.data['newPage'];
+                    $table.trigger('repaginate');
+                    $(this).addClass('active').siblings().removeClass('active');
+                }).appendTo($pager).addClass('clickable');
+            }
+            $pager.insertAfter($table).find('span.page-number:first').addClass('active');
+            $previous.insertBefore('span.page-number:first');
+            $next.insertAfter('span.page-number:last');
+
+            $next.click(function (e) {
+                $previous.addClass('clickable');
+                $pager.find('.active').next('.page-number.clickable').click();
+            });
+            $previous.click(function (e) {
+                $next.addClass('clickable');
+                $pager.find('.active').prev('.page-number.clickable').click();
+            });
+            $table.on('repaginate', function () {
+                $next.addClass('clickable');
+                $previous.addClass('clickable');
+
+                setTimeout(function () {
+                    var $active = $pager.find('.page-number.active');
+                    if ($active.next('.page-number.clickable').length === 0) {
+                        $next.removeClass('clickable');
+                    } else if ($active.prev('.page-number.clickable').length === 0) {
+                        $previous.removeClass('clickable');
+                    }
+                });
+            });
+            $table.trigger('repaginate');
+        });
+    });
+</script>
+
+@*dropdown script*@
+<script>
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
+
+

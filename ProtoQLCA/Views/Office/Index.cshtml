@@ -1,0 +1,81 @@
+﻿@model ProtoQLCA.Models.OfficeModel
+
+@{
+    ViewBag.Title = "Văn phòng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/Home/Mainpage" class="navbar-brand">Home</a>   
+            </div>
+        </div>
+</div>
+
+<h2>Danh sách văn phòng</h2>
+
+<p>
+    <button onclick="location.href='/Office/CreateNew'" class="btn btn-default">Tạo phòng-ban mới</button>
+</p>
+
+<table class="table">
+    <tr>
+        <th>STT</th>
+        <th>Tên phòng</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.ListOffice)
+    {
+        <tr>
+            <td>@item.OfficeID</td>
+            <td>@item.OfficeName</td>
+            <td>
+                <button onclick="location.href='/Office/Edit/@item.OfficeID'" class="btn btn-default" style="margin-left:0%">Edit</button>
+                <button onclick="location.href='/Office/Details/@item.OfficeID'" class="btn btn-default" style="margin-left:0%">Details</button>
+                <button class="btn btn-default" onclick="modalConfirm(@item.OfficeID)">Delete</button>
+            </td>
+        </tr>
+    }
+    
+
+</table>
+<div id="mi-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">%times;</span>
+        <h4 class="modal-title" id="myModalLabel">Bạn muốn xoá phòng này chứ</h4>
+        <div class="modal-footer" style="text-align:center">
+            <button type="button" class="btn btn-default" id="modal-btn-yes" onclick="delfunction()">Yes</button>
+            <button type="button" class="btn btn-primary" id="modal-btn-no" onclick="closeModal()">No</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var btn = document.getElementById("btn-confirm");
+    var modal = document.getElementById("mi-modal");
+    var span = document.getElementsByClassName("close")[0];
+    var close = document.getElementById("modal-btn-no");
+    var btnDelete = document.getElementById("modal-btn-yes");
+    function modalConfirm(id) {
+        modal.style.display = "block";
+        btnDelete.value = id;
+    }
+    function closeModal() {
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        close.onclick = function () {
+            modal.style.display = "none";
+        }
+    }
+    function delfuntion() {
+        return location.href = '/Office/Delete?id=' + btnDelete.value.toString();
+    }
+</script>

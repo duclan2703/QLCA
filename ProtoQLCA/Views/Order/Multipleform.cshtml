@@ -1,0 +1,375 @@
+﻿@model ProtoQLCA.Models.MultiOrderModel
+
+@{
+    ViewBag.Title = "Multipleform";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    table {
+        width: 100%;
+        font: 17px Calibri;
+    }
+
+    .table > thead > tr > th {
+        vertical-align: bottom;
+        border: 1px solid #000;
+    }
+
+    table, th, td {
+        border: solid 1px #DDD;
+        border-collapse: collapse;
+        padding: 2px 3px;
+        text-align: center;
+    }
+
+    input[type='text'], select {
+        font: 17px Calibri #000000;
+        text-align: center;
+        border: solid 1px #CCC;
+        width: auto;
+        padding: 2px 3px;
+    }
+</style>
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a href="/Home/Mainpage" class="navbar-brand">Home</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/Order/Personalform">Tạo phiếu ăn cá nhân</a>
+            </li>
+            <li>
+                <a class="nav-link" href="/Order/Multipleform">Tạo phiếu ăn tập thể</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Xin chào @HttpContext.Current.User.Identity.Name
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/Home/ChangePassword">Đổi mật khẩu</a>
+                    @*<a class="dropdown-item" href="#">Another action</a>*@
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/Home/Logout">Đăng xuất</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<h2>Phiếu ăn tập thể</h2>
+
+<div class="container">
+
+    <hr />
+    <div class="row">
+        <div class="col-sm-2">
+            <label class="control-label col" for="Name">Danh sách nhân viên</label>
+        </div>
+        <div class="col-sm-4">
+            <select class="listname form-control select2-hidden-accessible" id="test" style="width:80%" aria-hidden="true"></select>
+            @Html.ValidationMessageFor(m => m.Liststaff)
+        </div>
+
+        <div class="col-sm-2" style="text-align:center">
+            <label class="control-label col" for="OrderDate">Ngày lập phiếu</label>
+        </div>
+        <div class="col-sm-4">
+            <input class="form-control text-box dropdown" data-val="true" data-val-date="The field OrderDate must be a date." data-val-required="The OrderDate field is required." id="OrderDate" name="OrderDate" type="text" style="width:300px ;text-align:center" autocomplete="off" value="">
+            @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+            <label class="control-label" for="ShiftID">Ca ăn:</label>
+        </div>
+        <div class="col-md-2">
+            <p style="padding:7px">Ca 1 <input type="checkbox" name="Ca1" id="myCheck1" class="check" value="true"></p>
+            <input id="text1" name="Quantity1" class="text-box" value="1" hidden>
+        </div>
+        <div class="col-md-2">
+            <p style="padding:7px">Ca 2 <input type="checkbox" name="Ca2" id="myCheck2" class="check" value="true"></p>
+            <input id="text2" name="Quantity2" class="text-box" value="1" hidden>
+        </div>
+        <div class="col-md-2">
+            <p style="padding:7px">Ca 3 <input type="checkbox" name="Ca3" id="myCheck3" class="check" value="true"></p>
+            <input id="text3" name="Quantity3" class="text-box" value="1" hidden>
+        </div>
+        @Html.ValidationMessageFor(model => model.ShiftID, "", new { @class = "text-danger" })
+    </div>
+</div>
+<button id="addrow" class="btn btn-primary">Thêm</button>
+
+
+<table id="order" class="table">
+    <thead>
+        <tr>
+            <th style="width:300px">Tên</th>
+            <th style="width:150px">Ca 1</th>
+            <th style="width:150px">Ca 2</th>
+            <th style="width:150px">Ca 3</th>
+            <th width="300px">Ngày đặt</th>
+            <th style="border-top:hidden;border-right:hidden;border-bottom-color:#ffffff"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+        <button id="create" onclick="Save()" class="btn btn-success" style="margin-left:200px">Tạo phiếu ăn</button>
+    </div>
+</div>
+
+
+<script>
+    @*datetime*@
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+        dd = '0' + dd
+    }
+
+    if (mm < 10) {
+        mm = '0' + mm
+    }
+
+    // today = yyyy + '/' + mm + '/' + dd;
+    today = dd + '-' + mm + '-' + yyyy;
+
+    console.log(today);
+    document.getElementById('OrderDate').value = today;
+
+    @*select2*@
+    $(document).ready(function () {
+        $('#test').select2({
+            ajax: {
+                url: "/Order/GetListName",
+                dataType: 'json',
+                delay: 250,
+                 data: function (params) {
+                     var query = {
+                         keyword: params.term,
+                         fetchsize:10,
+                    };
+                    return query;
+                 },
+                //data lay trong controller
+                processResults: function (data) {
+                    results = [];
+                    for (var i = 0; i < data.length; i++) {
+                        results.push({ id: data[i].ID, text: data[i].Name });
+                    }
+                    return {
+                        results: results
+                    };
+                },
+                cache: true
+            },
+        });
+    })
+
+    @*disable day*@
+    $j2(document).ready(function () {
+        $j2('#OrderDate').datepicker({
+            dateFormat: "dd-mm-yy",
+            minDate: -0,
+        });
+    });
+
+    @*tạo row*@
+    $(document).ready(function () {
+        var checkbox1 = document.getElementById("myCheck1");
+        var checkbox2 = document.getElementById("myCheck2");
+        var checkbox3 = document.getElementById("myCheck3");
+        $("#addrow").on("click", function () {
+            if ($("#test option:selected").text() === "") {
+                alert("Vui lòng chọn tên nhân viên");
+                return;
+            }
+            var date = $("#OrderDate").val();
+            debugger;
+            var newname = $("#test").val();
+            var ca1id = "Ca1" + newname + date;
+            var ca2id = "Ca2" + newname + date;
+            var ca3id = "Ca3" + newname + date;
+            var isduplicate = false;
+            var isexisted = false;
+            if (checkbox1.checked === false && checkbox2.checked === false && checkbox3.checked === false){
+                alert("Vui lòng chọn Ca ăn");
+                return;
+            }
+            $("table tbody tr td:first-child").each(function () {
+                if (this.innerText === $("#test option:selected").text()) {
+                    isduplicate = true;
+                }
+            })
+            $("table tbody tr td:nth-child(5)").each(function () {
+                if (this.innerText === $("#OrderDate").val())
+                    isexisted = true;
+            })
+            //$("table tbody tr td").filter(':nth-child(2), :nth-child(3), :nth-child(4)').each(function () {
+            //    if (this.innerText == "1") {
+            //        switch (isquantity) {
+            //            case true: {
+            //                break;
+            //            }
+            //            case false: {
+
+            //            }
+            //            default:
+            //        }
+            //    }
+            //})
+            if (isduplicate == true && isexisted == true) {
+                //alert("Nhân viên đã đặt ca ăn");
+                debugger;
+                $("#" + newname + date).remove();
+                $("#order tbody").append('<tr id=\"' + newname + date + '\">'
+                    + '<td>' + $("#test option:selected").text() + '</td>'
+                    + '<td class="Ca1" id=\"' + ca1id + '\"></td>'
+                    + '<td class="Ca2" id=\"' + ca2id + '\"></td>'
+                    + '<td class="Ca3" id=\"' + ca3id + '\"></td>'
+                    + '<td class="OrderDate">' + $("#OrderDate").val() + '</td>'
+                    + '<td style="border-right:hidden;border-bottom:hidden"><button class="ibtnDel btn btn-danger">Xoá</button></td>'
+                    + '</tr>');
+                if (checkbox1.checked === true) {
+                document.getElementById(ca1id).innerHTML = "1";
+                checkbox1.checked = false;
+                }
+                if (checkbox2.checked === true) {
+                    document.getElementById(ca2id).innerHTML = "1";
+                    checkbox2.checked = false;
+                }
+                if (checkbox3.checked === true) {
+                    document.getElementById(ca3id).innerHTML = "1";
+                    checkbox3.checked = false;
+                }
+                $('#test').val('').trigger('change');
+                checkbox1.checked = false;
+                checkbox2.checked = false;
+                checkbox3.checked = false;
+            }
+            if (isduplicate == false) {
+                debugger;
+                $("#order tbody").append('<tr id=\"' + newname + date + '\">'
+                    + '<td class="Liststaff">' + $("#test option:selected").text() + '</td>'
+                    + '<td class="Ca1" id=\"' + ca1id + '\"></td>'
+                    + '<td class="Ca2" id=\"' + ca2id + '\"></td>'
+                    + '<td class="Ca3" id=\"' + ca3id + '\"></td>'
+                    + '<td class="OrderDate">' + $("#OrderDate").val() + '</td>'
+                    + '<td style="border-right:hidden;border-bottom:hidden"><button class="ibtnDel btn btn-danger">Xoá</button></td>'
+                    + '</tr>');
+            }
+            if (isduplicate == true && isexisted == false) {
+                debugger;
+                $("#order tbody").append('<tr id=\"' + newname + date + '\">'
+                    + '<td class="Liststaff">' + $("#test option:selected").text() + '</td>'
+                    + '<td class="Ca1" id=\"' + ca1id + '\"></td>'
+                    + '<td class="Ca2" id=\"' + ca2id + '\"></td>'
+                    + '<td class="Ca3" id=\"' + ca3id + '\"></td>'
+                    + '<td class="OrderDate">' + $("#OrderDate").val() + '</td>'
+                    + '<td style="border-right:hidden;border-bottom:hidden"><button class="ibtnDel btn btn-danger">Xoá</button></td>'
+                    + '</tr>');
+            }
+            if (checkbox1.checked === true) {
+                document.getElementById(ca1id).innerHTML = "1";
+                checkbox1.checked = false;
+            }
+            if (checkbox2.checked === true) {
+                document.getElementById(ca2id).innerHTML = "1";
+                checkbox2.checked = false;
+            }
+            if (checkbox3.checked === true) {
+                document.getElementById(ca3id).innerHTML = "1";
+                checkbox3.checked = false;
+            }
+            $('#test').val('').trigger('change');
+        });
+        $("#order").on("click", ".ibtnDel", function (event) {
+            $(this).closest("tr").remove();
+        });
+    });
+
+
+    @*submit form*@
+    function Save() {
+        var listorder = [];
+        $('table tbody tr').each(function () {
+            name = $(this).find(".Liststaff").html();
+            ca1 = $(this).find(".Ca1").html();
+            ca2 = $(this).find(".Ca2").html();
+            ca3 = $(this).find(".Ca3").html();
+            orderdate = $(this).find(".OrderDate").html();
+            var order = {
+                Name: name,
+                OrderDate: orderdate,
+                Quantity1: ca1,
+                Quantity2: ca2,
+                Quantity3: ca3
+            };
+            listorder.push(order)
+        });
+
+        var orderlist = { orderlist: JSON.stringify(listorder) }
+        $.ajax({
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(orderlist),
+            url: '/Order/MultipleformCreate',
+            dataType: 'json',
+            success: function (data) {
+                window.location.href = '/Order/Success';
+            },
+            failure: function (response) {
+                alert('Tạo phiếu thất bại');
+            },
+            error: function (response) {
+                alert('Có lỗi xảy ra');
+            }
+        });
+    }
+    @*disable checkbox*@
+    var enableDisable = function () {
+        var hours = new Date().getHours();
+        var mins = new Date().getMinutes();
+        var elems = document.getElementById("myCheck1");
+        if (hours >= 8 && hours < 19) {
+            elems.disabled = false;
+        } else {
+            elems.disabled = true;
+        }
+    };
+    setInterval(enableDisable, 1000);
+    enableDisable();
+     var enableDisable = function () {
+        var hours = new Date().getHours();
+        var elems = document.getElementById("myCheck2");
+        if (hours > 8 && hours < 19) {
+            elems.disabled = false;
+        } else {
+            elems.disabled = true;
+        }
+    };
+    setInterval(enableDisable, 1000);
+    enableDisable();
+    var enableDisable = function () {
+        var hours = new Date().getHours();
+        var elems = document.getElementById("myCheck3");
+        if (hours > 8 && hours < 19) {
+            elems.disabled = false;
+        } else {
+            elems.disabled = false;
+        }
+    };
+    setInterval(enableDisable, 1000);
+    enableDisable();
+</script>
+
+<div>
+    @Html.ActionLink("Về trang chính", "Mainpage")
+</div>

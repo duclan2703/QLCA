@@ -1,0 +1,61 @@
+﻿@model QLAC.Domain.Staff
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="text-align:center">Xoá dữ liệu nhân viên</h2>
+
+<div class="body-content">
+    
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+           Tên:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            Ngày sinh:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DateOfBirth)
+        </dd>
+
+        <dt>
+            Chức vụ:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Position)
+        </dd>       
+
+        <dt>
+            Phòng/ban: 
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Office)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10" style="margin-left:500px">
+                <input type="submit" onclick="return confirm('Bạn muốn xoá nhân viên này chứ?')" value="Delete" class="btn btn-default" />
+            </div>
+        </div>
+    }
+    <div class="form no-color">
+        <button onclick="location.href='@Url.Action("StaffIndex", "Staff")'" class="btn btn-default">Back to list</button>
+    </div>
+</div>

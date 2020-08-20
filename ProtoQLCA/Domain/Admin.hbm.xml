@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
+  <class name="ProtoQLCA.Domain.Admin, ProtoQLCA" dynamic-update="true" table="Admin" >
+    <id name="UserID" column="UserID" type=" Int32">
+      <generator class="native" />
+    </id>
+    <property name="Username" column="Username" type="string" length="50" />
+    <property name="Password" column="Password" type="string" length="50" />
+  </class>
+
+</hibernate-mapping>

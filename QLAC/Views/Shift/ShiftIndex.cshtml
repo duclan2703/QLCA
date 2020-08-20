@@ -1,0 +1,76 @@
+﻿@model QLAC.Models.ShiftIndex
+
+@{ 
+    ViewBag.Title = "Danh sách ca";
+}
+
+<h2>Danh sách ca</h2>
+
+<p>
+    <button onclick="location.href='/Shift/Create'" class="button">Create New</button>
+</p>
+
+<table class="table">
+    <tr>
+        <th>STT</th>
+        <th>Mã ca</th>
+        <th>Tên ca</th>
+        <th>Đăng ký từ</th>
+        <th>Đăng ký đến</th>
+        <th></th>
+    </tr>
+
+    @foreach(var item in Model.ListShift)
+    {
+        <tr>
+            <td>@item.ID</td>
+            <td>@item.Code</td>
+            <td>@item.Name</td>
+            <td>@item.RegFrom</td>
+            <td>@item.RegTo</td>
+            <td>
+                <button onclick="location.href='/Shift/Edit/@item.ID'" class="btn btn-default" style="margin-left:0%">Edit</button>
+                <button onclick="location.href='/Shift/Details/@item.ID'" class="btn btn-default" style="margin-left:0%">Details</button>
+                <button class="btn btn-default" onclick="modalConfirm(@item.ID)">Delete</button>
+            </td>
+        </tr>
+    }
+    <div id="mi-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">%times;</span> 
+            <h4 class="modal-title" id="myModalLabel">Bạn muốn xoá ca này chứ</h4>
+            <div class="modal-footer" style="text-align:center">
+                <button type="button" class="btn btn-default" id="modal-btn-yes" onclick="delfunction()">Yes</button>
+                <button type="button" class="btn btn-primary" id="modal-btn-no" onclick="closeModal()">No</button>
+            </div>
+        </div>
+    </div>
+</table>
+
+<script>
+    var btn = document.getElementById("btn-confirm");
+    var modal = document.getElementById("mi-modal");
+    var span = document.getElementsByClassName("close")[0];
+    var close = document.getElementById("modal-btn-no");
+    var btnDelete = document.getElementById("modal-btn-yes");
+    function modalConfirm(id) {
+        modal.style.display = "block";
+        btnDelete.value = id;
+    }
+    function closeModal() {
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        close.onclick = function () {
+            modal.style.display = "none";
+        }
+    }
+    function delfuntion() {
+        return location.href = '/Staff/Delete?id=' + btnDelete.value.toString();
+    }
+</script>

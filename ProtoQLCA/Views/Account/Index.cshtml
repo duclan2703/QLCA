@@ -1,0 +1,92 @@
+﻿@model ProtoQLCA.Models.AccountModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/Home/Mainpage" class="navbar-brand">Home</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Account/CreateAccount">Tạo tài khoản</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<h2>Danh sách nhân viên</h2>
+
+
+<table class="table">
+    <tr>
+        <th>STT</th>
+        <th>Tên</th>
+        <th>Ngày sinh</th>
+        <th>Phòng - ban</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Listaccount)
+    {
+        <tr>
+            <td>@item.UserID</td>
+            <td>@item.Name</td>
+            <td>@item.DateOfBirth.ToString("dd/MM/yyyy")</td>
+            <td>@item.OfficeName</td>
+            <td>
+                <button onclick="location.href='/Account/Edit/@item.UserID'" class="btn btn-default" style="margin-left:0%">Edit</button>
+                
+                <button class="btn btn-default" onclick="modalConfirm(@item.UserID)">Delete</button>
+            </td>
+        </tr>
+    }
+
+    <div id="mi-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times</span>
+            <h4 class="modal-title" id="myModalLabel">Bạn muốn xoá nhân viên này chứ?</h4>
+            <div class="modal-footer" style="text-align:center">
+                <button type="button" class="btn btn-default" id="modal-btn-yes" onclick="delfunction()">Yes</button>
+                <button type="button" class="btn btn-primary" id="modal-btn-no" onclick="closeModal()">No</button>
+            </div>
+        </div>
+    </div>
+</table>
+
+<div>
+    @Html.ActionLink("Về trang chính", "Mainpage", "Home")
+</div>
+
+<script>
+    var btn = document.getElementById("btn-confirm");
+    var modal = document.getElementById("mi-modal");
+    var span = document.getElementsByClassName("close")[0];
+    var close = document.getElementById("modal-btn-no");
+    var btnDelete = document.getElementById("modal-btn-yes");
+    function modalConfirm(id) {
+        modal.style.display = "block";
+        btnDelete.value = id;
+    }
+    function closeModal() {
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        close.onclick = function () {
+            modal.style.display = "none";
+        }
+    }
+    function delfunction() {
+        return location.href = '/Account/Delete?id=' + btnDelete.value.toString();
+    }
+</script>

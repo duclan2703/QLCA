@@ -1,0 +1,116 @@
+﻿@model DTO_QLAC.Order
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/Home/Mainpage" class="navbar-brand">Home</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Xin chào @HttpContext.Current.User.Identity.Name
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/Home/ChangePassword">Đổi mật khẩu</a>
+                        @*<a class="dropdown-item" href="#">Another action</a>*@
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/Home/Logout">Đăng xuất</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4>Order</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.OrderID)
+    @Html.HiddenFor(model => model.UserID)
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="ShiftID">Ca</label>
+        <div class="col-md-10">
+            <p style="padding:7px">@ViewBag.shiftname</p>
+            @Html.ValidationMessageFor(model => model.ShiftID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="OfficeID">Phòng - ban</label>
+        <div class="col-md-10">
+            <p style="padding:7px">@ViewBag.officename</p>
+            @Html.ValidationMessageFor(model => model.OfficeID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="Name">Tên</label>
+        <div class="col-md-10">
+            <p style="padding:7px">@ViewBag.name</p>
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="OrderDate">Ngày tạo phiếu</label>
+        <div class="col-md-10">
+            <p style="padding:7px">@ViewBag.date</p>
+            @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="EditDate">Ngày sửa phiếu</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.EditDate, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.EditDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Trở về", "Index", "Order")
+</div>
+
+
+<script>
+    var today = new Date();
+
+      var dd = today.getDate();
+      var mm = today.getMonth()+1; //January is 0!
+      var yyyy = today.getFullYear();
+
+      if(dd<10) {
+          dd = '0'+dd
+      } 
+
+      if(mm<10) {
+          mm = '0'+mm
+      } 
+
+      // today = yyyy + '/' + mm + '/' + dd;
+       today = yyyy + '-' + mm + '-' + dd;
+
+      console.log(today);
+      document.getElementById('EditDate').value = today;
+</script>

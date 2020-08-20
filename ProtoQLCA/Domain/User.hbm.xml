@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
+  <class name="ProtoQLCA.Domain.User, ProtoQLCA" dynamic-update="true" table="User" >
+    <id name="UserID" column="UserID" type="Int32" unsaved-value="0">
+      <generator class="native" />       
+      
+    </id>
+    <property name="Name" column="Name" type="string" length="50" />
+    <property name="DateOfBitrth" column="DateOfBitrth" type="datetime" />
+    <property name="OfficeName" column="OfficeName" type="string" length="50" />
+    <property name="Username" column="Username" type="string" length="50" />
+    <property name="Password" column="Password" type="string" length="50" />
+  </class>
+
+</hibernate-mapping>

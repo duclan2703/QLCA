@@ -1,0 +1,88 @@
+﻿@model DTO_QLAC.Account
+
+@{
+    ViewBag.Title = "View";
+}
+
+@if (HttpContext.Current.User.Identity.IsAuthenticated)
+{
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/Home/Mainpage" class="navbar-brand">Home</a>   
+            </div>                
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    @if (HttpContext.Current.User.IsInRole("admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Account/Index">Quản lý nhân viên</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Office/Index">Văn phòng</a>
+                        </li>
+
+                    }
+                    @if (HttpContext.Current.User.IsInRole("chief"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Order/Index">Thông tin phiếu ăn</a>
+                        </li>
+                    }
+
+                    @if (HttpContext.Current.User.IsInRole("user"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Order/Success">Phiếu ăn đã đặt</a>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Order/Personalform">Tạo phiếu ăn cá nhân</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Order/Multipleform">Tạo phiếu ăn tập thể</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Xin chào @HttpContext.Current.User.Identity.Name
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/Home/ChangePassword">Đổi mật khẩu</a>
+                            @*<a class="dropdown-item" href="#">Another action</a>*@
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/Home/Logout">Đăng xuất</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+                      
+        </div>
+    </div>
+}
+
+
+
+
+
+
+<script>
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
