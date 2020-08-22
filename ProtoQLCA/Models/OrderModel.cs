@@ -42,9 +42,9 @@ namespace ProtoQLCA.Models
 
     public class FilterModel
     {
-        public string? Name { get; set; }
-        public string? OfficeName { get; set; }
-        public string? FromDate { get; set; }
-        public string? ToDate { get; set; }
+        public string Name { get; set; }
+        public string OfficeName { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
     }
 }
