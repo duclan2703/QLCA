@@ -516,18 +516,6 @@
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
   </Target>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v16.0\WebApplications\Microsoft.WebApplication.targets" />
-  <Target Name="Package">
-    <MSBuild Projects="@(PackageProject)" Targets="Package" Properties="Platform=$(Platform);
-                                                                           Configuration=$(Configuration);
-                                                                           DeployOnBuild=true;
-                                                                           DeployTarget=Package;
-                                       PackageLocation=$(PackageOutputDir)\$([System.Text.RegularExpressions.Regex]::Split($(ProjectName), '(.*\\)([a-z,A-Z,0-9,_,-]+)(\.\*proj;)')[2])\$([System.Text.RegularExpressions.Regex]::Split($(ProjectName), '(.*\\)([a-z,A-Z,0-9,_,-]+)(\.\*proj;)')[2]).zip;
-                                       PackageAsSingleFile=true;
-                                       ExcludeFilesFromDeployment=Web.config;
-                                       _PackageTempDir=$(PackageOutputDir)\temp;">
-    </MSBuild>
-    <Exec Command="echo y| cacls $(PackageOutputDir)\$([System.Text.RegularExpressions.Regex]::Split($(ProjectName), '(.*\\)([a-z,A-Z,0-9,_,-]+)(\.\*proj;)')[2])\* /G NetworkService:F"/>
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
